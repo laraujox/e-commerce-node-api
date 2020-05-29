@@ -1,45 +1,26 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
-const router = express.Router();
+const mongoose = require('mongoose');
 
-//Every request body will be converted to json
-app.use(bodyParser.json())
-//Encode every query parameter
-app.use(bodyParser.urlencoded({ extended: false }))
+mongoose.connect('mongodb+srv://user:Fnb6fgnt@cluster0-hp9kg.mongodb.net/test?retryWrites=true&w=majority', { useUnifiedTopology: true });
 
-const probe = router.get('/', (req, res, next) => {
-    res.status(200).send({
-        status: "OK"
-    });
-});
+//Carrega models
+const Product = require('./model/Product');
+const Customer = require('./model/Customer');
+const Order = require('./model/Order');
 
-const create = router.post('/', (req, res, next) => {
-    res.status(201).send({
-        body: req.body
-    });
-});
+//Load routes
+const probe = require("./route/probe");
+const product = require("./route/product");
+const customer = require("./route/customer");
 
-const update = router.put('/:id', (req, res, next) => {
-    const id = req.params.id;
-
-    res.status(200).send({
-        id: id,
-        item: req.body
-    });
-});
-
-const del = router.delete('/:id', (req, res, next) => {
-    const id = req.params.id;
-
-    res.status(200).send({
-        id: id
-    });
-});
+//Convert body to json & Encode query parameter
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use('/', probe);
-app.use('/', create);
-app.use('/', update);
-app.use('/', del);
+app.use('/product', product);
+app.use('/customer', customer);
 
 module.exports = app;
