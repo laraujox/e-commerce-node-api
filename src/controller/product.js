@@ -11,7 +11,7 @@ exports.get = async (req, res, next) =>{
     // findById --> Faz a busca pelo ID
     try{
         const data = await service.get(query);
-        res.status(201).send({
+        res.status(200).send({
             message: "Get product succeed!",
             data: data
         });

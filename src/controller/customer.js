@@ -1,5 +1,7 @@
 const ValidatorContract = require('../validator/validator');
 const service = require("../service/customer");
+const email = require("../service/email");
+const md5 = require("md5");
 
 exports.post = async (req, res, next) =>{
     let contract = new ValidatorContract();
@@ -15,8 +17,14 @@ exports.post = async (req, res, next) =>{
         return;
     }
 
+    const encryptedPsw = md5(req.body.password);
+    req.body.password = encryptedPsw;
+
     try{
         const data = await service.create(req.body);
+
+        email.send(req.body.email, 'Bem vindo!', global.EMAIL_TMPL.replace('{0}', req.body.name));
+
         res.status(201).send({
             message: "Create customer succeed!",
             data: data
@@ -37,7 +45,7 @@ exports.get = async (req, res, next) =>{
     }
     try{
         const data = await service.get(query);
-        res.status(201).send({
+        res.status(200).send({
             message: "Get customer succeed!",
             data: data
         });

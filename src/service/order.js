@@ -11,5 +11,7 @@ exports.create = async (body) =>{
 }
 
 exports.get = async (query) =>{
-    return await Order.find(query);
+    return await Order.find(query)
+    .populate('customer', 'name')
+    .populate('items.product', 'name price');
 }
