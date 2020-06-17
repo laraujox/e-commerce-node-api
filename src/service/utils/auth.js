@@ -27,5 +27,5 @@ exports.authorize = async (req, res, next) => {
             }
         });
     }
-    return jwt.sign(data, global.SECRET_KEY, {expiresIn: '1d'});
+    return jwt.sign({token: token}, config.SECRET_KEY, {expiresIn: '6h'});
 }

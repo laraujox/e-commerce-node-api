@@ -1,5 +1,6 @@
 const ValidatorContract = require('../validator/validator');
 const service = require("../service/order");
+const auth = require("../service/utils/auth")
 const guid = require('guid');
 
 exports.get = async (req, res, next) =>{
@@ -26,8 +27,10 @@ exports.get = async (req, res, next) =>{
 };
 
 exports.post = async (req, res, next) =>{
+    const customer = auth.decodeToken(req.headers['x-access-token']);
+
     const newOrder = {
-        customer: req.body.customer,
+        customer: customer.id,
         items: req.body.items,
         status: req.body.status,
     }
