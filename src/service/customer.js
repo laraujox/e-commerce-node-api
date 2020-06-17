@@ -13,3 +13,7 @@ exports.create = async (body) =>{
 exports.get = async (query) =>{
     return await Customer.find(query);
 }
+
+exports.authenticate = async (data) =>{
+    return Customer.findOne(data);
+}

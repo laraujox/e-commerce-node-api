@@ -18,6 +18,11 @@ const Product = new Schema({
         type: Number,
         required: [true, "Preço é obrigatório."],
     },
+    image: {
+        type: String,
+        required: [true, "Imagem é obrigatória."],
+        trim: true
+    },
     description: {
         type: String,
         required: false,

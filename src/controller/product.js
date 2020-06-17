@@ -1,5 +1,8 @@
 const ValidatorContract = require('../validator/validator');
 const service = require("../service/product");
+const config = require("../config");
+const azure = require("azure-storage");
+const guid = require("guid");
 
 exports.get = async (req, res, next) =>{
     let query = {};
@@ -25,6 +28,24 @@ exports.get = async (req, res, next) =>{
 };
 
 exports.post = async (req, res, next) =>{
+    const blobSvc = azure.createBlobService(config.AZURE_CS);
+    const rawdData = req.body.image;
+    const matches = rawdData.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+    const type = matches[1];
+    const buffer = new Buffer(matches[2], 'base64');
+    const typeImage = type.substr(type.length - 3, type.length)
+    let fileName = guid.raw().toString() + "." + typeImage;
+
+    let retornoContainer = await blobSvc.createBlockBlobFromText('productimages', fileName, buffer, {
+        contentType: type
+    }, (error, result, response) => {
+        if(error){
+            fileName = 'default-product.png';
+        }
+    });
+    const imagePath = config.CONTAINER_PATH + fileName;
+    req.body.image = imagePath;
+
     let contract = new ValidatorContract();
     contract.isRequired(req.body.name, "O campo Nome é obrigatório!");
     contract.isRequired(req.body.sku, "O campo SKU é obrigatório!");
@@ -40,6 +61,7 @@ exports.post = async (req, res, next) =>{
 
     try{
         const data = await service.create(req.body);
+        console.info("Created product with sku: " + req.body.sku);
         res.status(201).send({
             message: "Create product succeed!",
             data: data

@@ -11,6 +11,7 @@ exports.create = async (body) =>{
     product.name = body.name;
     product.sku = body.sku;
     product.price = body.price;
+    product.image = body.image;
 
     return await product.save();
 }
