@@ -6,6 +6,8 @@ exports.create = async (body) =>{
     customer.name = body.name;
     customer.email = body.email;
     customer.password = body.password;
+    if(body.role)
+        customer.role = body.role;
 
     return await customer.save();
 }

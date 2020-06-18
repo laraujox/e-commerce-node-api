@@ -43,6 +43,7 @@ exports.authenticate = async (req, res, next) =>{
     let contract = new ValidatorContract();
     contract.isRequired(req.body.email, "O campo Email é obrigatório!");
     contract.isRequired(req.body.password, "O campo Senha é obrigatório!");
+    contract.isRequired(req.body.role, "O campo Role é obrigatório!");
 
     if(!contract.isValid()){
         res.status(400).send({
@@ -55,7 +56,8 @@ exports.authenticate = async (req, res, next) =>{
     try{
         const customer = await service.authenticate({
             email: req.body.email,
-            password: md5(req.body.password)
+            password: md5(req.body.password),
+            role: req.body.role
         });
 
         if (!customer){
@@ -67,7 +69,8 @@ exports.authenticate = async (req, res, next) =>{
 
         const token = await auth.generateToken({
             email: customer.email,
-            name: customer.name
+            name: customer.name,
+            role: req.body.role
         })
 
         res.status(200).send({

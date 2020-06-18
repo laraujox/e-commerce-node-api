@@ -29,3 +29,30 @@ exports.authorize = async (req, res, next) => {
     }
     return jwt.sign({token: token}, config.SECRET_KEY, {expiresIn: '6h'});
 }
+
+exports.isAdmin = async (req, res, next) => {
+    const token = req.headers['x-access-token'];
+
+    if(!token) {
+        res.status(401).json({
+            message: "Authentication failed!"
+        });
+    } else{
+        jwt.verify(token, config.SECRET_KEY, (error, decoded) => {
+            console.log(decoded)
+            if(error) {
+                res.status(401).json({
+                    message: "Authentication failed!"
+                });
+            }
+            if(decoded.role.includes('admin')){
+                next();
+            }
+            else{
+                res.status(403).json({
+                    message: "Permission denied!"
+                });
+            }
+        });
+    }
+}

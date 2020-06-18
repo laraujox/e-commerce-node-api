@@ -22,6 +22,12 @@ const Customer = new Schema({
         required: true,
         default: Date.now()
     },
+    role: {
+        type: String,
+        required: true,
+        enum: ['user', 'admin'],
+        default: 'user'
+    },
 });
 
 module.exports = mongoose.model('Customer', Customer);
